@@ -1,0 +1,13 @@
+{
+  "domain": "airselangor",
+  "name": "Air Selangor",
+  "after_dependencies": ["recorder"],
+  "codeowners": ["@zubir2k"],
+  "config_flow": true,
+  "documentation": "https://github.com/zubir2k/homeassistant-airselangor",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/zubir2k/homeassistant-airselangor/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

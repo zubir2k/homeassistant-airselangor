@@ -1,0 +1,10 @@
+{
+  "entity": {
+    "button": {
+      "refresh": { "default": "mdi:refresh" }
+    }
+  },
+  "services": {
+    "refresh": { "service": "mdi:refresh" }
+  }
+}

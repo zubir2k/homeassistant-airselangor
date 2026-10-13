@@ -1,0 +1,122 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Air Selangor",
+        "description": "Sign in with the same login you use on airselangor.com or the Air Selangor app.",
+        "data": {
+          "login_id": "Login ID (IC, passport or company number)",
+          "password": "Password"
+        }
+      },
+      "accounts": {
+        "title": "Choose water accounts",
+        "description": "Pick the water accounts to add to Home Assistant.",
+        "data": {
+          "accounts": "Water accounts"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate Air Selangor",
+        "description": "The password for {login_id} no longer works. Enter the current one.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid login ID or password (the account locks after 5 failed attempts).",
+      "cannot_connect": "Could not reach Air Selangor. Try again later.",
+      "no_accounts": "No water accounts are linked to this login.",
+      "select_at_least_one": "Select at least one account.",
+      "unknown": "Unexpected error. Check the logs."
+    },
+    "abort": {
+      "already_configured": "This Air Selangor login is already configured.",
+      "reauth_successful": "Re-authentication was successful.",
+      "wrong_account": "That login belongs to a different Air Selangor user."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Water accounts",
+        "data": {
+          "accounts": "Water accounts"
+        }
+      }
+    },
+    "error": {
+      "select_at_least_one": "Select at least one account."
+    },
+    "abort": {
+      "invalid_auth": "Saved credentials were rejected. Re-authenticate first.",
+      "cannot_connect": "Could not reach Air Selangor.",
+      "unknown": "Unexpected error."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "latest_bill_usage": {
+        "name": "Latest bill usage"
+      },
+      "latest_bill_amount": {
+        "name": "Latest bill amount"
+      },
+      "average_monthly_usage": {
+        "name": "Average monthly usage"
+      },
+      "usage_per_person": {
+        "name": "Usage per person"
+      },
+      "outstanding_balance": {
+        "name": "Outstanding balance"
+      },
+      "account_credit": {
+        "name": "Account credit"
+      },
+      "due_date": {
+        "name": "Due date"
+      },
+      "bill_date": {
+        "name": "Bill date"
+      },
+      "last_payment_amount": {
+        "name": "Last payment amount"
+      },
+      "last_payment_date": {
+        "name": "Last payment date"
+      },
+      "account_status": {
+        "name": "Account status"
+      }
+    },
+    "binary_sensor": {
+      "payment_due": {
+        "name": "Payment due"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Refresh"
+      }
+    }
+  },
+  "services": {
+    "refresh": {
+      "name": "Refresh",
+      "description": "Fetch the latest bills, balance and payments from Air Selangor now, instead of waiting for the daily update.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Air Selangor login",
+          "description": "Only refresh these logins. Leave empty to refresh all."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "entry_not_loaded": {
+      "message": "That Air Selangor login isn't loaded."
+    }
+  }
+}
