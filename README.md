@@ -1,13 +1,12 @@
-![Air Selangor](https://github.com/user-attachments/assets/df03fc34-f758-4c7f-9503-f4c084eb212d)
+<img src="custom_components/airselangor/brand/logo@2x.png" alt="Air Selangor for Home Assistant (unofficial)" width="420">
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/zubir2k/homeassistant-airselangor?style=social)](https://github.com/zubir2k/homeassistant-airselangor/stargazers)
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/default)
 [![hacs_badge](https://img.shields.io/badge/HACS-Integration-41BDF5.svg)](https://github.com/hacs/integration)
 ![GitHub all releases](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=Download%20Count&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.airselangor.total)
 [![Buy](https://img.shields.io/badge/Belanja-Coffee-yellow.svg)](https://zubirco.de/buymecoffee)
 [![GitHub Release](https://img.shields.io/github/release/zubir2k/homeassistant-airselangor.svg)](https://github.com/zubir2k/homeassistant-airselangor/releases/)
 
-A Home Assistant custom integration for [Air Selangor](https://www.airselangor.com). Track your water bills, usage, balance and payments for every water account linked to your Air Selangor login.
+An **unofficial**, community-built Home Assistant custom integration for [Air Selangor](https://www.airselangor.com) water accounts. Track your water bills, usage, balance and payments for every water account linked to your Air Selangor login.
 
 ## Features
 
@@ -133,15 +132,20 @@ ruff check . && pytest -q
 
 ### Important Notice & Reliability Disclaimer
 
-This integration retrieves account details, billing information, and water disruption notices from **Pengurusan Air Selangor Sdn Bhd (Air Selangor)** services. Please note:
+This integration retrieves account, billing, payment and household usage information from the online services of **Pengurusan Air Selangor Sdn Bhd (Air Selangor)**, using your own login. Please note:
 
-* **Unofficial Integration & No Liability:** This is an independent, community-driven project and is **not affiliated with, endorsed by, or officially connected to Air Selangor**. It is provided "as is" without warranty of any kind. The maintainer assumes no legal liability for any inaccuracies, delayed status updates, billing discrepancies, or unexpected disruption notices.
-* **Verify Critical Notices:** Water disruption schedules, restoration timelines, and billing statuses should always be cross-checked against official Air Selangor communication channels, including the **[Air Selangor Official Portal](https://www.airselangor.com/)**, the Air Selangor mobile app, or their official social media announcements.
-* **Upstream Dependencies & Availability:** Proper functioning depends on the availability of upstream endpoints, portal changes, and local network conditions. Session timeouts, upstream schema alterations, or service downtime from Air Selangor are beyond the control of this custom component.
+* **Unofficial Integration & No Liability:** This is an independent, community-driven project and is **not affiliated with, endorsed by, sponsored by, or officially connected to Air Selangor**. It is provided "as is" without warranty of any kind. The maintainer assumes no legal liability for any inaccuracies, delayed updates or billing discrepancies.
+* **Verify Critical Information:** Bills, balances, due dates and payment statuses should always be cross-checked against official Air Selangor channels, including the **[Air Selangor Official Portal](https://www.airselangor.com/)** and the Air Selangor mobile app.
+* **Upstream Dependencies & Availability:** Proper functioning depends on the availability of upstream endpoints, portal changes, and local network conditions. Session timeouts, upstream schema changes, or service downtime from Air Selangor are beyond the control of this custom component.
+* **Your Data Stays With You:** Your login is stored only in your own Home Assistant instance and is sent only to Air Selangor. Nothing is collected by the maintainer.
 
-*By using this integration, you acknowledge and agree that the developer holds no liability for missed notices, delayed alerts, or billing discrepancies.*
+*By using this integration, you acknowledge and agree that the developer holds no liability for missed notices, delayed updates, or billing discrepancies.*
+
+### Trademarks
+
+"Air Selangor" and the Air Selangor logo are trademarks of Pengurusan Air Selangor Sdn Bhd. The name is used here only to describe which service this integration works with. This project does not use the Air Selangor logo; the icon and logo in this repository are original artwork made for this project. If you represent Air Selangor and have concerns, please [open an issue](https://github.com/zubir2k/homeassistant-airselangor/issues).
 
 ## 🎖️ Credits & Acknowledgements
 
-* Data and account service interfaces courtesy of [Air Selangor](https://www.airselangor.com/) (Pengurusan Air Selangor Sdn Bhd).
+* Water account data comes from [Air Selangor](https://www.airselangor.com/) (Pengurusan Air Selangor Sdn Bhd), accessed with each user's own login.
 * Join the local community discussion at [Home Assistant Malaysia](https://www.facebook.com/groups/homeassistantmalaysia).
