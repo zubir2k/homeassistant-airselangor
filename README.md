@@ -119,7 +119,7 @@ The integration talks to the same JSON API the Air Selangor web portal uses (`ht
 | Household / LCD usage | `lifestyle/v1/lcd/latestbillwaterusage` |
 | Payments | `payment/v1/history` |
 
-Unauthenticated calls use a public bearer of `sha256("airselangorsecretkey" + Timestamp)`; logged-in calls use the access token. This is an unofficial integration and may break if Air Selangor changes its portal.
+This is an unofficial integration and may break if Air Selangor changes its portal.
 
 ## Development
 
