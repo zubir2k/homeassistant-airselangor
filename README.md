@@ -1,4 +1,4 @@
-<img src="custom_components/airselangor/brand/logo@2x.png" alt="Air Selangor for Home Assistant (unofficial)" width="420">
+![Air Selangor](https://github.com/user-attachments/assets/df03fc34-f758-4c7f-9503-f4c084eb212d)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/zubir2k/homeassistant-airselangor?style=social)](https://github.com/zubir2k/homeassistant-airselangor/stargazers)
 [![hacs_badge](https://img.shields.io/badge/HACS-Integration-41BDF5.svg)](https://github.com/hacs/integration)
@@ -143,7 +143,7 @@ This integration retrieves account, billing, payment and household usage informa
 
 ### Trademarks
 
-"Air Selangor" and the Air Selangor logo are trademarks of Pengurusan Air Selangor Sdn Bhd. The name is used here only to describe which service this integration works with. This project does not use the Air Selangor logo; the icon and logo in this repository are original artwork made for this project. If you represent Air Selangor and have concerns, please [open an issue](https://github.com/zubir2k/homeassistant-airselangor/issues).
+"Air Selangor" and the Air Selangor logo are trademarks of Pengurusan Air Selangor Sdn Bhd. The name and logo are used here for identification purposes only, to show which service this integration works with, and do not imply endorsement. If you represent Air Selangor and have concerns, please [open an issue](https://github.com/zubir2k/homeassistant-airselangor/issues).
 
 ## 🎖️ Credits & Acknowledgements
 
