@@ -2,6 +2,7 @@
   "domain": "airselangor",
   "name": "Air Selangor",
   "after_dependencies": ["recorder"],
+  "categories": ["local_services", "water.meters_leak_detection"],
   "codeowners": ["@zubir2k"],
   "config_flow": true,
   "documentation": "https://github.com/zubir2k/homeassistant-airselangor",
