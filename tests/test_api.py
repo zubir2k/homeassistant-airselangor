@@ -50,3 +50,30 @@ def test_spread_bills_matches_totals():
     assert round(sum(c for _, _, c in days), 6) == round(51.35 + 37.30 + 93.45, 6)
     assert days[-1][0] == date(2026, 9, 21)
     assert len({d for d, _, _ in days}) == len(days)
+
+
+async def test_concurrent_reauthenticate_serialized():
+    import asyncio
+    from unittest.mock import AsyncMock
+
+    client = AirSelangorClient(None, "id", "pw")
+    client._access_token = "expired-token"
+    client._refresh_token = "refresh-token"
+
+    refresh_calls = 0
+
+    async def fake_raw_post(path, body, authenticated):
+        nonlocal refresh_calls
+        await asyncio.sleep(0)
+        if path == "/authentication/v1/refreshtoken":
+            refresh_calls += 1
+            return 200, {"status": True, "data": {"accesstoken": "new-token"}}
+        if client._access_token == "expired-token":
+            return 401, {"status": False, "error": {"code": "999"}}
+        return 200, {"status": True, "data": {"userid": "user-1"}}
+
+    client._raw_post = AsyncMock(side_effect=fake_raw_post)
+    r1, r2 = await asyncio.gather(client.get_profile(), client.get_profile())
+    assert r1 == {"userid": "user-1"}
+    assert r2 == {"userid": "user-1"}
+    assert refresh_calls == 1

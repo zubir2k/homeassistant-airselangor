@@ -8,15 +8,16 @@ from typing import Any
 
 import voluptuous as vol
 from homeassistant.config_entries import (
+    SOURCE_RECONFIGURE,
     ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
     OptionsFlow,
 )
 from homeassistant.const import CONF_PASSWORD
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import selector
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import (
     AirSelangorAuthError,
@@ -49,7 +50,7 @@ async def validate_login(
     hass: HomeAssistant, login_id: str, password: str
 ) -> tuple[str, list[dict[str, str]]]:
     """Log in and return (user id, linked accounts)."""
-    client = AirSelangorClient(async_create_clientsession(hass), login_id, password)
+    client = AirSelangorClient(async_get_clientsession(hass), login_id, password)
     profile = await client.get_profile()
     accounts = await client.get_accounts()
     await client.logout()
@@ -153,13 +154,35 @@ class AirSelangorConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self._create(
                     [a for a in self._accounts if a[CONF_ACCOUNT_NUMBER] in chosen]
                 )
+        default: list[str] | None = None
+        if self.source == SOURCE_RECONFIGURE:
+            entry = self._get_reconfigure_entry()
+            available = {a[CONF_ACCOUNT_NUMBER] for a in self._accounts}
+            current = [
+                a[CONF_ACCOUNT_NUMBER]
+                for a in entry.data.get(CONF_ACCOUNTS, [])
+                if a[CONF_ACCOUNT_NUMBER] in available
+            ]
+            if current:
+                default = current
         return self.async_show_form(
             step_id="accounts",
-            data_schema=_accounts_schema(self._accounts),
+            data_schema=_accounts_schema(self._accounts, default),
             errors=errors,
         )
 
     def _create(self, accounts: list[dict[str, str]]) -> ConfigFlowResult:
+        if self.source == SOURCE_RECONFIGURE:
+            entry = self._get_reconfigure_entry()
+            return self.async_update_reload_and_abort(
+                entry,
+                title=f"Air Selangor ({self._login_id})",
+                data_updates={
+                    CONF_LOGIN_ID: self._login_id,
+                    CONF_PASSWORD: self._password,
+                    CONF_ACCOUNTS: accounts,
+                },
+            )
         return self.async_create_entry(
             title=f"Air Selangor ({self._login_id})",
             data={
@@ -169,7 +192,6 @@ class AirSelangorConfigFlow(ConfigFlow, domain=DOMAIN):
             },
         )
 
-    # ----------------------------------------------------------------- reauth
     async def async_step_reauth(
         self, entry_data: Mapping[str, Any]
     ) -> ConfigFlowResult:
@@ -188,6 +210,9 @@ class AirSelangorConfigFlow(ConfigFlow, domain=DOMAIN):
                 )
             except AirSelangorError as err:
                 errors["base"] = _error_key(err)
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected error during Air Selangor reauth")
+                errors["base"] = "unknown"
             else:
                 await self.async_set_unique_id(user_id)
                 self._abort_if_unique_id_mismatch(reason="wrong_account")
@@ -210,7 +235,55 @@ class AirSelangorConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
+        entry = self._get_reconfigure_entry()
+        if user_input is not None:
+            login_id = user_input[CONF_LOGIN_ID].strip()
+            try:
+                user_id, accounts = await validate_login(
+                    self.hass, login_id, user_input[CONF_PASSWORD]
+                )
+            except AirSelangorError as err:
+                _LOGGER.debug("Reconfigure login failed: %s", err)
+                errors["base"] = _error_key(err)
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected error during Air Selangor reconfigure")
+                errors["base"] = "unknown"
+            else:
+                await self.async_set_unique_id(user_id)
+                self._abort_if_unique_id_mismatch(reason="wrong_account")
+                if not accounts:
+                    errors["base"] = "no_accounts"
+                else:
+                    self._login_id = login_id
+                    self._password = user_input[CONF_PASSWORD]
+                    self._accounts = accounts
+                    if len(accounts) == 1:
+                        return self._create(accounts)
+                    return await self.async_step_accounts()
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_LOGIN_ID, default=entry.data.get(CONF_LOGIN_ID, "")
+                    ): str,
+                    vol.Required(CONF_PASSWORD): selector.TextSelector(
+                        selector.TextSelectorConfig(
+                            type=selector.TextSelectorType.PASSWORD
+                        )
+                    ),
+                }
+            ),
+            errors=errors,
+        )
+
     @staticmethod
+    @callback
     def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
         return AirSelangorOptionsFlow()
 
@@ -233,24 +306,28 @@ class AirSelangorOptionsFlow(OptionsFlow):
                 )
             except AirSelangorError as err:
                 return self.async_abort(reason=_error_key(err))
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected error loading Air Selangor options")
+                return self.async_abort(reason="unknown")
 
         if user_input is not None:
             chosen = set(user_input.get(CONF_ACCOUNTS) or [])
             if not chosen:
                 errors["base"] = "select_at_least_one"
             else:
-                self.hass.config_entries.async_update_entry(
-                    self.config_entry,
-                    data={
-                        **data,
-                        CONF_ACCOUNTS: [
-                            a
-                            for a in self._accounts
-                            if a[CONF_ACCOUNT_NUMBER] in chosen
-                        ],
-                    },
+                selected = [
+                    a
+                    for a in self._accounts
+                    if a[CONF_ACCOUNT_NUMBER] in chosen
+                ]
+                if selected != data.get(CONF_ACCOUNTS):
+                    self.hass.config_entries.async_update_entry(
+                        self.config_entry,
+                        data={**data, CONF_ACCOUNTS: selected},
+                    )
+                return self.async_create_entry(
+                    title="", data=dict(self.config_entry.options)
                 )
-                return self.async_create_entry(data={})
 
         current = [a[CONF_ACCOUNT_NUMBER] for a in data.get(CONF_ACCOUNTS, [])]
         return self.async_show_form(

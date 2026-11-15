@@ -1,14 +1,21 @@
 {
   "domain": "airselangor",
   "name": "Air Selangor",
-  "after_dependencies": ["recorder"],
-  "categories": ["local_services", "water.meters_leak_detection"],
-  "codeowners": ["@zubir2k"],
+  "after_dependencies": [
+    "recorder"
+  ],
+  "categories": [
+    "local_services",
+    "water.meters_leak_detection"
+  ],
+  "codeowners": [
+    "@zubir2k"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/zubir2k/homeassistant-airselangor",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/zubir2k/homeassistant-airselangor/issues",
   "requirements": [],
-  "version": "0.1.2"
+  "version": "0.1.3"
 }

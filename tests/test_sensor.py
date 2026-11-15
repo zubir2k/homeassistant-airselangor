@@ -83,3 +83,29 @@ async def test_refresh_action_and_button(hass, mock_client):
 async def test_daily_interval(hass, mock_client):
     entry = await _setup(hass)
     assert entry.runtime_data.update_interval.total_seconds() == 86400
+
+
+async def test_stale_device_cleanup_and_diagnostics(hass, mock_client):
+    from homeassistant.helpers import device_registry as dr
+
+    from custom_components.airselangor import async_remove_config_entry_device
+    from custom_components.airselangor.diagnostics import (
+        async_get_config_entry_diagnostics,
+    )
+
+    entry = await _setup(hass)
+    reg = dr.async_get(hass)
+    stale = reg.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, "3899999999")},
+        name="Stale",
+    )
+    active = reg.async_get_device(identifiers={(DOMAIN, "3800000001")})
+    assert active is not None
+    assert await async_remove_config_entry_device(hass, entry, stale) is True
+    assert await async_remove_config_entry_device(hass, entry, active) is False
+
+    diag = await async_get_config_entry_diagnostics(hass, entry)
+    assert diag["entry"][CONF_LOGIN_ID] == "**REDACTED**"
+    assert diag["accounts"]["0001"]["account"]["address"] == "**REDACTED**"
+    assert diag["accounts"]["0001"]["account"]["account_number"] == "**REDACTED**"

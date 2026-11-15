@@ -77,8 +77,8 @@ def auto_enable_custom_integrations(enable_custom_integrations):
 def mock_client():
     """Patch the API client everywhere it is constructed."""
     with (
-        patch("custom_components.airselangor.async_create_clientsession"),
-        patch("custom_components.airselangor.config_flow.async_create_clientsession"),
+        patch("custom_components.airselangor.async_get_clientsession"),
+        patch("custom_components.airselangor.config_flow.async_get_clientsession"),
         patch(
             "custom_components.airselangor.AirSelangorClient", autospec=True
         ) as init_cls,

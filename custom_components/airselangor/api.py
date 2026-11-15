@@ -252,7 +252,6 @@ class AirSelangorClient:
         self._csrf_token: str | None = None
         self._lock = asyncio.Lock()
 
-    # ------------------------------------------------------------------ http
     @staticmethod
     def _timestamp() -> str:
         return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -312,14 +311,19 @@ class AirSelangorClient:
             )
         return payload.get("data") or {}
 
-    async def _post(self, path: str, body: dict[str, Any] | None = None) -> dict:
+    async def _post(
+        self, path: str, body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         body = body or {}
         if self._access_token is None:
-            await self.login()
+            async with self._lock:
+                if self._access_token is None:
+                    await self._login_unlocked()
+        used_token = self._access_token
         status, payload = await self._raw_post(path, body, True)
         if self._token_rejected(status, payload):
             _LOGGER.debug("Access token rejected on %s, re-authenticating", path)
-            await self._reauthenticate()
+            await self._reauthenticate(used_token)
             status, payload = await self._raw_post(path, body, True)
             if self._token_rejected(status, payload):
                 raise AirSelangorAuthError("Session rejected after re-login")
@@ -334,72 +338,81 @@ class AirSelangorClient:
             return str(code) in INVALID_TOKEN_CODES
         return False
 
-    # ------------------------------------------------------------------ auth
     async def login(self) -> None:
         """Log in with the portal login ID (IC/passport/email) and password."""
         async with self._lock:
-            status, payload = await self._raw_post(
-                "/authentication/v1/login",
-                {
-                    "loginid": self._login_id,
-                    "password": self._password,
-                    "deviceuid": self._device_uid,
-                    "apptype": "1",
-                    "loginType": "1",
-                    # The API answers 104 unless the browser fingerprint fields
-                    # the portal sends (ua-parser output) are all present.
-                    "ostype": "Linux",
-                    "osversion": "x86_64",
-                    "devicename": "Chrome",
-                    "app": "Chrome",
-                    "appversion": "126",
-                },
-                False,
-            )
-            if status >= 500:
-                raise AirSelangorConnectionError(f"login: HTTP {status}")
-            try:
-                data = self._unwrap("login", status, payload)
-            except AirSelangorApiError as err:
-                if err.code in LOCKED_OUT_CODES:
-                    raise AirSelangorAuthError(
-                        "Account temporarily locked after failed logins"
-                    ) from err
-                has_attempts = (
-                    isinstance(payload, dict)
-                    and isinstance(payload.get("data"), dict)
-                    and "attempts" in payload["data"]
-                )
-                if err.code in INVALID_CREDENTIALS_CODES or has_attempts:
-                    raise AirSelangorAuthError(str(err)) from err
-                raise
-            token = data.get("accesstoken")
-            if not token:
-                raise AirSelangorAuthError("Login returned no access token")
-            self._access_token = token
-            self._refresh_token = data.get("refreshtoken")
-            self._csrf_token = data.get("csrftoken")
+            await self._login_unlocked()
 
-    async def _reauthenticate(self) -> None:
+    async def _login_unlocked(self) -> None:
+        """Perform login assuming ``self._lock`` is already held."""
+        status, payload = await self._raw_post(
+            "/authentication/v1/login",
+            {
+                "loginid": self._login_id,
+                "password": self._password,
+                "deviceuid": self._device_uid,
+                "apptype": "1",
+                "loginType": "1",
+                # The API answers 104 unless the browser fingerprint fields
+                # the portal sends (ua-parser output) are all present.
+                "ostype": "Linux",
+                "osversion": "x86_64",
+                "devicename": "Chrome",
+                "app": "Chrome",
+                "appversion": "126",
+            },
+            False,
+        )
+        if status >= 500:
+            raise AirSelangorConnectionError(f"login: HTTP {status}")
+        try:
+            data = self._unwrap("login", status, payload)
+        except AirSelangorApiError as err:
+            if err.code in LOCKED_OUT_CODES:
+                raise AirSelangorAuthError(
+                    "Account temporarily locked after failed logins"
+                ) from err
+            has_attempts = (
+                isinstance(payload, dict)
+                and isinstance(payload.get("data"), dict)
+                and "attempts" in payload["data"]
+            )
+            if err.code in INVALID_CREDENTIALS_CODES or has_attempts:
+                raise AirSelangorAuthError(str(err)) from err
+            raise
+        token = data.get("accesstoken")
+        if not token:
+            raise AirSelangorAuthError("Login returned no access token")
+        self._access_token = token
+        self._refresh_token = data.get("refreshtoken")
+        self._csrf_token = data.get("csrftoken")
+
+    async def _reauthenticate(self, rejected_token: str | None = None) -> None:
         """Try the refresh token first, then a full login."""
-        if self._refresh_token:
-            status, payload = await self._raw_post(
-                "/authentication/v1/refreshtoken",
-                {"refreshtoken": self._refresh_token},
-                False,
-            )
+        async with self._lock:
             if (
-                status == 200
-                and isinstance(payload, dict)
-                and payload.get("status")
-                and (payload.get("data") or {}).get("accesstoken")
+                rejected_token is not None
+                and self._access_token is not None
+                and self._access_token != rejected_token
             ):
-                self._access_token = payload["data"]["accesstoken"]
                 return
-        self._access_token = None
-        await self.login()
+            if self._refresh_token:
+                status, payload = await self._raw_post(
+                    "/authentication/v1/refreshtoken",
+                    {"refreshtoken": self._refresh_token},
+                    False,
+                )
+                if (
+                    status == 200
+                    and isinstance(payload, dict)
+                    and payload.get("status")
+                    and (payload.get("data") or {}).get("accesstoken")
+                ):
+                    self._access_token = payload["data"]["accesstoken"]
+                    return
+            self._access_token = None
+            await self._login_unlocked()
 
-    # ------------------------------------------------------------------ data
     async def get_profile(self) -> dict[str, Any]:
         return await self._post("/userprofile/v2/view/basic")
 

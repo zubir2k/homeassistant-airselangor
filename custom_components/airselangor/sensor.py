@@ -21,7 +21,10 @@ from homeassistant.helpers.typing import StateType
 from . import AirSelangorConfigEntry
 from .api import AccountData
 from .const import CURRENCY_RM
+from .coordinator import AirSelangorCoordinator
 from .entity import AirSelangorEntity
+
+PARALLEL_UPDATES = 0
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -103,7 +106,6 @@ SENSORS: tuple[AirSelangorSensorDescription, ...] = (
         translation_key="usage_per_person",
         native_unit_of_measurement="L/person/day",
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:account-water",
         value_fn=lambda d: d.usage_per_person_lpd,
         attrs_fn=lambda d: {
             "household_size": d.household_size,
@@ -174,7 +176,6 @@ SENSORS: tuple[AirSelangorSensorDescription, ...] = (
         key="account_status",
         translation_key="account_status",
         entity_category=EntityCategory.DIAGNOSTIC,
-        icon="mdi:water-check",
         value_fn=lambda d: d.account.status,
         attrs_fn=lambda d: {
             "account_number": d.account.account_number,
@@ -202,7 +203,12 @@ async def async_setup_entry(
 class AirSelangorSensor(AirSelangorEntity, SensorEntity):
     entity_description: AirSelangorSensorDescription
 
-    def __init__(self, coordinator, account_number, description) -> None:
+    def __init__(
+        self,
+        coordinator: AirSelangorCoordinator,
+        account_number: str,
+        description: AirSelangorSensorDescription,
+    ) -> None:
         super().__init__(coordinator, account_number, description.key)
         self.entity_description = description
 

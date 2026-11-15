@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntryState
+from homeassistant.const import ATTR_CONFIG_ENTRY_ID
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
-from .const import ATTR_CONFIG_ENTRY_ID, DOMAIN, SERVICE_REFRESH
+from .const import DOMAIN, AirSelangorService
 
 REFRESH_SCHEMA = vol.Schema(
     {vol.Optional(ATTR_CONFIG_ENTRY_ID): vol.All(cv.ensure_list, [cv.string])}
@@ -18,6 +19,8 @@ REFRESH_SCHEMA = vol.Schema(
 @callback
 def async_setup_services(hass: HomeAssistant) -> None:
     """Register airselangor.refresh."""
+    if hass.services.has_service(DOMAIN, AirSelangorService.REFRESH):
+        return
 
     async def _refresh(call: ServiceCall) -> None:
         wanted = call.data.get(ATTR_CONFIG_ENTRY_ID)
@@ -35,5 +38,5 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await entry.runtime_data.async_refresh()
 
     hass.services.async_register(
-        DOMAIN, SERVICE_REFRESH, _refresh, schema=REFRESH_SCHEMA
+        DOMAIN, AirSelangorService.REFRESH, _refresh, schema=REFRESH_SCHEMA
     )

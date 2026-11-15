@@ -2,6 +2,10 @@
   "entity": {
     "button": {
       "refresh": { "default": "mdi:refresh" }
+    },
+    "sensor": {
+      "account_status": { "default": "mdi:water-check" },
+      "usage_per_person": { "default": "mdi:account-water" }
     }
   },
   "services": {

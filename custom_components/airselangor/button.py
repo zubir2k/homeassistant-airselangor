@@ -8,7 +8,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import AirSelangorConfigEntry
+from .coordinator import AirSelangorCoordinator
 from .entity import AirSelangorEntity
+
+PARALLEL_UPDATES = 0
 
 
 async def async_setup_entry(
@@ -28,7 +31,9 @@ class RefreshButton(AirSelangorEntity, ButtonEntity):
     _attr_translation_key = "refresh"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(self, coordinator, account_number: str) -> None:
+    def __init__(
+        self, coordinator: AirSelangorCoordinator, account_number: str
+    ) -> None:
         super().__init__(coordinator, account_number, "refresh")
 
     @property

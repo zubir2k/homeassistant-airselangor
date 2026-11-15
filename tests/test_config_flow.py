@@ -56,3 +56,43 @@ async def test_reauth(hass, mock_client):
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reauth_successful"
     assert entry.data[CONF_PASSWORD] == "new"
+
+
+async def test_reconfigure(hass, mock_client):
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="user-1",
+        data={CONF_LOGIN_ID: "820101015555", CONF_PASSWORD: "old", CONF_ACCOUNTS: []},
+    )
+    entry.add_to_hass(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    assert result["step_id"] == "reconfigure"
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {CONF_LOGIN_ID: "820101015555", CONF_PASSWORD: "updated-pw"},
+    )
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.data[CONF_PASSWORD] == "updated-pw"
+    assert entry.data[CONF_ACCOUNTS][0]["account_number"] == "3800000001"
+
+
+async def test_options_flow(hass, mock_client):
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="user-1",
+        data={
+            CONF_LOGIN_ID: "820101015555",
+            CONF_PASSWORD: "pw",
+            CONF_ACCOUNTS: [],
+        },
+    )
+    entry.add_to_hass(hass)
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "init"
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {CONF_ACCOUNTS: ["3800000001"]}
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert entry.data[CONF_ACCOUNTS][0]["account_number"] == "3800000001"

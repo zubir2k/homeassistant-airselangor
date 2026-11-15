@@ -56,9 +56,17 @@ class AirSelangorCoordinator(DataUpdateCoordinator[dict[str, AccountData]]):
                     account
                 )
         except AirSelangorAuthError as err:
-            raise ConfigEntryAuthFailed(str(err)) from err
+            raise ConfigEntryAuthFailed(
+                translation_domain=DOMAIN,
+                translation_key="auth_failed",
+                translation_placeholders={"error": str(err)},
+            ) from err
         except AirSelangorError as err:
-            raise UpdateFailed(str(err)) from err
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="update_failed",
+                translation_placeholders={"error": str(err)},
+            ) from err
 
         missing = self.selected - result.keys()
         if missing:

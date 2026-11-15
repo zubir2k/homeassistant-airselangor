@@ -22,6 +22,14 @@
         "data": {
           "password": "Password"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Air Selangor",
+        "description": "Update your Air Selangor login credentials.",
+        "data": {
+          "login_id": "Login ID (IC, passport or company number)",
+          "password": "Password"
+        }
       }
     },
     "error": {
@@ -34,6 +42,7 @@
     "abort": {
       "already_configured": "This Air Selangor login is already configured.",
       "reauth_successful": "Re-authentication was successful.",
+      "reconfigure_successful": "Re-configuration was successful.",
       "wrong_account": "That login belongs to a different Air Selangor user."
     }
   },
@@ -115,8 +124,14 @@
     }
   },
   "exceptions": {
+    "auth_failed": {
+      "message": "Authentication with Air Selangor failed: {error}"
+    },
     "entry_not_loaded": {
       "message": "That Air Selangor login isn't loaded."
+    },
+    "update_failed": {
+      "message": "Error communicating with Air Selangor: {error}"
     }
   }
 }

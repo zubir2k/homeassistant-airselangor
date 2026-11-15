@@ -44,7 +44,7 @@ def spread_bills(bills: list[Bill]) -> list[tuple[date, float, float]]:
     Each bill covers the days after the previous bill date up to and including
     its own bill date.
     """
-    days: list[tuple[date, float, float]] = []
+    days: dict[date, tuple[float, float]] = {}
     previous: date | None = None
     for bill in sorted(bills, key=lambda b: b.bill_date):
         start = previous or (bill.bill_date - timedelta(days=DEFAULT_PERIOD_DAYS))
@@ -52,15 +52,11 @@ def spread_bills(bills: list[Bill]) -> list[tuple[date, float, float]]:
         previous = bill.bill_date
         if length <= 0:
             continue
+        daily_usage = bill.usage_m3 / length
+        daily_cost = bill.amount_rm / length
         for offset in range(1, length + 1):
-            days.append(
-                (
-                    start + timedelta(days=offset),
-                    bill.usage_m3 / length,
-                    bill.amount_rm / length,
-                )
-            )
-    return days
+            days[start + timedelta(days=offset)] = (daily_usage, daily_cost)
+    return [(day, usage, cost) for day, (usage, cost) in sorted(days.items())]
 
 
 async def async_import_bill_statistics(hass: HomeAssistant, data: AccountData) -> None:
@@ -110,6 +106,7 @@ async def _import(
         start = datetime(day.year, day.month, day.day, tzinfo=tz)
         if last_ts is not None and start.timestamp() <= last_ts:
             continue
+        last_ts = start.timestamp()
         total += value
         stats.append(
             StatisticData(start=start, state=round(value, 4), sum=round(total, 4))

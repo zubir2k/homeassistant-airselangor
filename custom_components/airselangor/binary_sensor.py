@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
@@ -11,7 +13,10 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from . import AirSelangorConfigEntry
+from .coordinator import AirSelangorCoordinator
 from .entity import AirSelangorEntity
+
+PARALLEL_UPDATES = 0
 
 
 async def async_setup_entry(
@@ -31,7 +36,9 @@ class PaymentDueSensor(AirSelangorEntity, BinarySensorEntity):
     _attr_translation_key = "payment_due"
     _attr_device_class = BinarySensorDeviceClass.PROBLEM
 
-    def __init__(self, coordinator, account_number: str) -> None:
+    def __init__(
+        self, coordinator: AirSelangorCoordinator, account_number: str
+    ) -> None:
         super().__init__(coordinator, account_number, "payment_due")
 
     @property
@@ -42,7 +49,7 @@ class PaymentDueSensor(AirSelangorEntity, BinarySensorEntity):
         return data.outstanding_rm > 0
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict[str, Any] | None:
         data = self.account_data
         if data is None:
             return None
