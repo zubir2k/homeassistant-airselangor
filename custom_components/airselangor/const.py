@@ -3,9 +3,10 @@
 from datetime import timedelta
 from enum import StrEnum
 
-from homeassistant.const import ATTR_CONFIG_ENTRY_ID, Platform
+from homeassistant.const import Platform
 
 DOMAIN = "airselangor"
+ATTR_CONFIG_ENTRY_ID = "config_entry_id"
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
