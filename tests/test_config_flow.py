@@ -75,6 +75,7 @@ async def test_reconfigure(hass, mock_client):
     assert result["reason"] == "reconfigure_successful"
     assert entry.data[CONF_PASSWORD] == "updated-pw"
     assert entry.data[CONF_ACCOUNTS][0]["account_number"] == "3800000001"
+    await hass.async_block_till_done()
 
 
 async def test_options_flow(hass, mock_client):
@@ -96,3 +97,4 @@ async def test_options_flow(hass, mock_client):
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert entry.data[CONF_ACCOUNTS][0]["account_number"] == "3800000001"
+    await hass.async_block_till_done()

@@ -73,6 +73,18 @@ def auto_enable_custom_integrations(enable_custom_integrations):
     yield
 
 
+@pytest.fixture(autouse=True)
+async def cleanup_entries(hass):
+    """Clean up and unload any config entries after each test to prevent lingering timers."""
+    yield
+    from homeassistant.config_entries import ConfigEntryState
+    from custom_components.airselangor.const import DOMAIN
+    for entry in list(hass.config_entries.async_entries(DOMAIN)):
+        if entry.state is ConfigEntryState.LOADED:
+            await hass.config_entries.async_unload(entry.entry_id)
+            await hass.async_block_till_done()
+
+
 @pytest.fixture
 def mock_client():
     """Patch the API client everywhere it is constructed."""
