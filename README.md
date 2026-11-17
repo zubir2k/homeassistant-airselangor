@@ -115,26 +115,9 @@ Every day in a period gets the same value, so a busy weekend and a week away loo
 
 ## How it works
 
-The integration talks to the same JSON API the Air Selangor web portal uses (`https://api3.airselangor.com/`):
+The integration communicates securely with the Air Selangor portal over HTTPS using your own login credentials to fetch billing and account details.
 
-| Purpose | Endpoint (POST) |
-|---|---|
-| Login | `authentication/v1/login` |
-| Token refresh | `authentication/v1/refreshtoken` |
-| Linked accounts | `wateraccount/v1/dashboardlist` |
-| Balance, due date | `wateraccount/v1/details` |
-| Bill history (type 1 = last 6, type 2 = 6 before) | `billing/v1/watertrend` |
-| Household / LCD usage | `lifestyle/v1/lcd/latestbillwaterusage` |
-| Payments | `payment/v1/history` |
-
-This is an unofficial integration and may break if Air Selangor changes its portal.
-
-## Development
-
-```bash
-pip install -r requirements_test.txt ruff
-ruff check . && pytest -q
-```
+This is an unofficial community integration and is not officially affiliated with Air Selangor.
 
 ## 📢 Disclaimer & Data Source
 
