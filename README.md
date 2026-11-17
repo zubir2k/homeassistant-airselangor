@@ -18,22 +18,30 @@ An **unofficial**, community-built Home Assistant custom integration for [Air Se
 - **Re-auth flow**: if your password changes, Home Assistant asks for the new one
 
 ## Installation
+#### With Marketplace/HACS
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=zubir2k&repository=homeassistant-airselangor&category=integration)
 
-### HACS (custom repository)
+> [!Tip]
+> If you are unable to use the button above, manually search for Air Selangor in Marketplace/HACS.
 
+#### Manual
+1. Copy the `airselangor` directory from `custom_components` in this repository and place inside your Home Assistant's `custom_components` directory.
+2. Restart Home Assistant
+3. Follow the instructions in the `Setup` section
+
+> [!WARNING]
+> If installing manually, in order to be alerted about new releases, you will need to subscribe to releases from this repository.
+
+## Setup
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=airselangor)
 
-1. HACS → ⋮ → **Custom repositories**
-2. Add `https://github.com/zubir2k/homeassistant-airselangor`, category **Integration**
-3. Install **Air Selangor** and restart Home Assistant
+> [!Tip]
+> If you are unable to use the button above, follow the steps below:
+> 1. Navigate to the Home Assistant Integrations page (Settings --> Devices & Services)
+> 2. Click the `+ ADD INTEGRATION` button in the lower right-hand corner
+> 3. Search for `Air Selangor`
 
-### Manual
-
-Copy `custom_components/airselangor/` into your Home Assistant `config/custom_components/` folder and restart.
-
-## Configuration
-
-**Settings → Devices & services → Add integration → Air Selangor**, then enter the login ID (IC / passport / company number) and password you use on airselangor.com. If more than one water account is linked, pick the ones to add. Change the selection later from the integration's **Configure** button.
+Enter the login ID (IC / passport / company number) and password you use on airselangor.com. If more than one water account is linked, pick the ones to add. Change the selection later from the integration's **Configure** button.
 
 > ⚠️ Air Selangor locks the login after 5 wrong passwords, so double-check before submitting.
 
