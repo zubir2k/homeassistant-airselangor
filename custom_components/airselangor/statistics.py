@@ -30,7 +30,7 @@ from homeassistant.const import UnitOfVolume
 from homeassistant.core import HomeAssistant
 from homeassistant.util import dt as dt_util
 
-from .api import AccountData, Bill
+from airselangor import AccountData, Bill
 from .const import CURRENCY_RM, DOMAIN, TIME_ZONE
 
 _LOGGER = logging.getLogger(__name__)

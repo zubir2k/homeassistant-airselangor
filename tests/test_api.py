@@ -2,11 +2,8 @@
 
 from datetime import UTC, date, timedelta
 
-from custom_components.airselangor.api import (
-    AirSelangorClient,
-    _parse_portal_datetime,
-    _to_float,
-)
+from airselangor import AirSelangorClient
+from airselangor.models import _parse_portal_datetime, _to_float
 from custom_components.airselangor.statistics import spread_bills
 
 from .conftest import make_account_data

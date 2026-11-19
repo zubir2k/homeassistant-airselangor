@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from custom_components.airselangor.api import (
+from airselangor import (
     AccountData,
     Bill,
     Payment,

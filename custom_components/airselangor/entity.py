@@ -5,7 +5,7 @@ from __future__ import annotations
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .api import AccountData
+from airselangor import AccountData
 from .const import DOMAIN, MANUFACTURER, MODEL
 from .coordinator import AirSelangorCoordinator
 

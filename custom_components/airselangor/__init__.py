@@ -10,7 +10,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
-from .api import AirSelangorClient
+from airselangor import AirSelangorClient
 from .const import (
     CONF_ACCOUNT_NUMBER,
     CONF_ACCOUNTS,
