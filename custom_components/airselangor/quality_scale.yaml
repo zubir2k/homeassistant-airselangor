@@ -6,9 +6,7 @@ rules:
   common-modules: done
   config-flow: done
   config-flow-test-coverage: done
-  dependency-transparency:
-    status: done
-    comment: No external dependencies required.
+  dependency-transparency: done
   docs-actions: done
   docs-conditions:
     status: exempt

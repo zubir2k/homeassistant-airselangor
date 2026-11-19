@@ -18,8 +18,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
-from . import AirSelangorConfigEntry
 from airselangor import AccountData
+
+from . import AirSelangorConfigEntry
 from .const import CURRENCY_RM
 from .coordinator import AirSelangorCoordinator
 from .entity import AirSelangorEntity

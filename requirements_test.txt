@@ -1,1 +1,2 @@
 pytest-homeassistant-custom-component
+python-airselangor==0.1.1

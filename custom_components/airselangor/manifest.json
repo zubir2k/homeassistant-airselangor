@@ -16,9 +16,12 @@
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/zubir2k/homeassistant-airselangor/issues",
+  "loggers": [
+    "airselangor"
+  ],
   "quality_scale": "silver",
   "requirements": [
-    "python-airselangor==0.1.0"
+    "python-airselangor==0.1.1"
   ],
-  "version": "0.1.7"
+  "version": "0.1.8"
 }

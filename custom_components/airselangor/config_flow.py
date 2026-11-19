@@ -25,6 +25,7 @@ from airselangor import (
     AirSelangorConnectionError,
     AirSelangorError,
 )
+
 from .const import (
     CONF_ACCOUNT_ID,
     CONF_ACCOUNT_NUMBER,
@@ -316,9 +317,7 @@ class AirSelangorOptionsFlow(OptionsFlow):
                 errors["base"] = "select_at_least_one"
             else:
                 selected = [
-                    a
-                    for a in self._accounts
-                    if a[CONF_ACCOUNT_NUMBER] in chosen
+                    a for a in self._accounts if a[CONF_ACCOUNT_NUMBER] in chosen
                 ]
                 if selected != data.get(CONF_ACCOUNTS):
                     self.hass.config_entries.async_update_entry(
