@@ -10,13 +10,19 @@ from homeassistant.const import CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 
 from . import AirSelangorConfigEntry
-from .const import CONF_ACCOUNT_ID, CONF_ACCOUNT_NUMBER, CONF_LOGIN_ID
+from .const import (
+    CONF_ACCOUNT_ID,
+    CONF_ACCOUNT_NUMBER,
+    CONF_DISPLAY_NAME,
+    CONF_LOGIN_ID,
+)
 
 TO_REDACT = {
     CONF_PASSWORD,
     CONF_LOGIN_ID,
     CONF_ACCOUNT_ID,
     CONF_ACCOUNT_NUMBER,
+    CONF_DISPLAY_NAME,
     "accountnumber",
     "address",
     "bill_number",

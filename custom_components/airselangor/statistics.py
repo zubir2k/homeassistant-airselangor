@@ -92,7 +92,7 @@ async def _import(
     unit: str,
     series: list[tuple[date, float]],
 ) -> None:
-    tz = dt_util.get_time_zone(TIME_ZONE)
+    tz = await dt_util.async_get_time_zone(TIME_ZONE)
     last = await get_instance(hass).async_add_executor_job(
         get_last_statistics, hass, 1, statistic_id, True, {"sum"}
     )
