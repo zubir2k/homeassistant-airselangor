@@ -100,7 +100,7 @@ async def test_stale_device_cleanup_and_diagnostics(hass, mock_client):
         identifiers={(DOMAIN, "3899999999")},
         name="Stale",
     )
-    active = reg.async_get_device(identifiers={(DOMAIN, "3800000001")})
+    active = reg.async_get_device_by_identifier((DOMAIN, "3800000001"), entry.entry_id)
     assert active is not None
     assert await async_remove_config_entry_device(hass, entry, stale) is True
     assert await async_remove_config_entry_device(hass, entry, active) is False
