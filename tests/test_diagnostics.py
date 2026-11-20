@@ -1,10 +1,19 @@
 """Tests for Air Selangor diagnostics."""
 
+from dataclasses import dataclass
 from unittest.mock import MagicMock
 
 from custom_components.airselangor.const import CONF_DISPLAY_NAME
 from custom_components.airselangor.diagnostics import async_get_config_entry_diagnostics
 from homeassistant.core import HomeAssistant
+
+
+@dataclass
+class MockAccount:
+    """Mock account dataclass for diagnostics tests."""
+
+    display_name: str = "My House"
+    accountnumber: str = "1234567890"
 
 
 async def test_diagnostics_redaction(hass: HomeAssistant) -> None:
@@ -21,9 +30,7 @@ async def test_diagnostics_redaction(hass: HomeAssistant) -> None:
         ],
     }
 
-    mock_account = MagicMock()
-    mock_account.display_name = "My House"
-    mock_account.accountnumber = "1234567890"
+    mock_account = MockAccount()
 
     coordinator = MagicMock()
     coordinator.data = {"1234567890": mock_account}

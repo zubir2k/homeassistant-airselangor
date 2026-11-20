@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, is_dataclass
 from typing import Any
 
 from homeassistant.components.diagnostics import async_redact_data
@@ -52,7 +52,12 @@ async def async_get_config_entry_diagnostics(
     return {
         "entry": async_redact_data(dict(entry.data), TO_REDACT),
         "accounts": {
-            number[-4:]: async_redact_data(asdict(data), TO_REDACT)
+            number[-4:]: async_redact_data(
+                asdict(data)
+                if is_dataclass(data) and not isinstance(data, type)
+                else (vars(data) if hasattr(data, "__dict__") else data),
+                TO_REDACT,
+            )
             for number, data in (coordinator.data or {}).items()
         },
     }
