@@ -103,7 +103,22 @@ def mock_client():
         ) as flow_cls,
     ):
         for cls in (init_cls, flow_cls):
-            client = cls.return_value
+            target_client = cls.return_value
+
+            def make_side_effect(c):
+                def _check_args(*args, **kwargs):
+                    login = kwargs.get("login_id", args[0] if len(args) > 0 else None)
+                    sess = kwargs.get("session", args[2] if len(args) > 2 else None)
+                    if not isinstance(login, str):
+                        raise TypeError(f"login_id must be str, got {type(login)}")
+                    if isinstance(sess, str):
+                        raise TypeError(f"session cannot be str, got {sess}")
+                    return c
+
+                return _check_args
+
+            cls.side_effect = make_side_effect(target_client)
+            client = target_client
             client.get_profile = AsyncMock(return_value={"userid": "user-1"})
             client.get_accounts = AsyncMock(
                 side_effect=lambda: [

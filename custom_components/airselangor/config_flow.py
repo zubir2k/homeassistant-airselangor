@@ -51,7 +51,9 @@ async def validate_login(
     hass: HomeAssistant, login_id: str, password: str
 ) -> tuple[str, list[dict[str, str]]]:
     """Log in and return (user id, linked accounts)."""
-    client = AirSelangorClient(async_get_clientsession(hass), login_id, password)
+    client = AirSelangorClient(
+        login_id, password, session=async_get_clientsession(hass)
+    )
     profile = await client.get_profile()
     accounts = await client.get_accounts()
     await client.logout()

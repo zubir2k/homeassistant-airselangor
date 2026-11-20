@@ -37,9 +37,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: AirSelangorConfigEntry) 
     """Set up Air Selangor from a config entry."""
     accounts = entry.data.get(CONF_ACCOUNTS, [])
     client = AirSelangorClient(
-        async_get_clientsession(hass),
         entry.data[CONF_LOGIN_ID],
         entry.data[CONF_PASSWORD],
+        session=async_get_clientsession(hass),
     )
     coordinator = AirSelangorCoordinator(hass, entry, client, accounts)
     # Fetches immediately when the account is added (and on every HA start),

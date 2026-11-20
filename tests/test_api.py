@@ -26,10 +26,17 @@ def test_to_float():
 
 
 def test_public_token_header():
-    client = AirSelangorClient(None, "id", "pw")
+    client = AirSelangorClient("id", "pw")
     headers = client._headers(authenticated=False)
     assert headers["Authorization"].startswith("Bearer ")
     assert len(headers["Authorization"]) == len("Bearer ") + 64
+
+
+def test_client_init_parameters():
+    client = AirSelangorClient("user123", "secret", session=None)
+    assert client._login_id == "user123"
+    assert client._password == "secret"
+    assert client._session is None
 
 
 def test_derived_values():

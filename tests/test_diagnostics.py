@@ -3,9 +3,10 @@
 from dataclasses import dataclass
 from unittest.mock import MagicMock
 
+from homeassistant.core import HomeAssistant
+
 from custom_components.airselangor.const import CONF_DISPLAY_NAME
 from custom_components.airselangor.diagnostics import async_get_config_entry_diagnostics
-from homeassistant.core import HomeAssistant
 
 
 @dataclass
